@@ -1,4 +1,5 @@
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 enum BuildMode {
   DEBUG,
@@ -30,6 +31,11 @@ class DeviceUtils {
   static Future<IosDeviceInfo> iosDeviceInfo() async {
     DeviceInfoPlugin plugin = DeviceInfoPlugin();
     return plugin.iosInfo;
+  }
+
+  static Future<PackageInfo> packageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo;
   }
 
 }

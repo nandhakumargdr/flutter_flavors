@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_flavors/core/utils/flavor_config.dart';
 import 'package:multi_flavors/core/utils/device_utils.dart';
 import 'package:multi_flavors/core/utils/string_utils.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class DeviceInfoDialog extends StatelessWidget {
 
@@ -41,11 +42,13 @@ class DeviceInfoDialog extends StatelessWidget {
 
   Widget _iOSContent() {
     return FutureBuilder(
-        future: DeviceUtils.iosDeviceInfo(),
-        builder: (context, AsyncSnapshot<IosDeviceInfo> snapshot) {
+        future: Future.wait([DeviceUtils.iosDeviceInfo(), DeviceUtils.packageInfo()]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (!snapshot.hasData) return Container();
 
-          IosDeviceInfo device = snapshot.data!;
+          IosDeviceInfo device = snapshot.data![0];
+          PackageInfo packageInfo = snapshot.data![1];
+
           return SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -55,7 +58,10 @@ class DeviceInfoDialog extends StatelessWidget {
                 _buildTile('Device:', '${device.name}'),
                 _buildTile('Model:', '${device.model}'),
                 _buildTile('System name:', '${device.systemName}'),
-                _buildTile('System version:', '${device.systemVersion}')
+                _buildTile('System version:', '${device.systemVersion}'),
+                _buildTile('Package name:', '${packageInfo.packageName}'),
+                _buildTile('Package version:', '${packageInfo.version}'),
+                _buildTile('Build number:', '${packageInfo.buildNumber}'),
               ],
             ),
           );
@@ -64,21 +70,25 @@ class DeviceInfoDialog extends StatelessWidget {
 
   Widget _androidContent() {
     return FutureBuilder(
-        future: DeviceUtils.androidDeviceInfo(),
-        builder: (context, AsyncSnapshot<AndroidDeviceInfo> snapshot) {
+        future: Future.wait([DeviceUtils.androidDeviceInfo(), DeviceUtils.packageInfo()]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (!snapshot.hasData) return Container();
 
-          AndroidDeviceInfo device = snapshot.data!;
+          AndroidDeviceInfo device = snapshot.data![0];
+          PackageInfo packageInfo = snapshot.data![1];
           return SingleChildScrollView(
             child: Column(
               children: <Widget>[
                 _buildTile('Flavor:', '${FlavorConfig.instance.name}'),
-                _buildTile('Build mode:', '${StringUtils.enumName(DeviceUtils.currentBuildMode().toString())}'),
-                _buildTile('Physical device?:', '${device.isPhysicalDevice}'),
+                _buildTile('Build mode:', StringUtils.enumName(DeviceUtils.currentBuildMode().toString())),
+                _buildTile('Physical device:', '${device.isPhysicalDevice}'),
                 _buildTile('Manufacturer:', '${device.manufacturer}'),
                 _buildTile('Model:', '${device.model}'),
                 _buildTile('Android version:', '${device.version.release}'),
-                _buildTile('Android SDK:', '${device.version.sdkInt}')
+                _buildTile('Android SDK:', '${device.version.sdkInt}'),
+                _buildTile('Package name:', packageInfo.packageName),
+                _buildTile('Package version:', packageInfo.version),
+                _buildTile('Build number:', packageInfo.buildNumber),
               ],
             ),
           );
@@ -90,12 +100,14 @@ class DeviceInfoDialog extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(5.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             key,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          Text(value)
+          SizedBox(width: 4.0),
+          Flexible(child: Text(value))
         ],
       ),
     );
