@@ -8,25 +8,25 @@ enum Flavor {
 }
 
 class FlavorConfigValues {
-  FlavorConfigValues({@required this.baseUrl});
+  FlavorConfigValues({this.showFlavorBanner = true, @required this.baseUrl});
 
+  final bool showFlavorBanner;
   final String? baseUrl;
-  //Add other flavor specific values, e.g database name
+//Add other flavor specific values, e.g database name
 }
-
 
 class FlavorConfig {
   late final Flavor? flavor;
   late final String? name;
   late final Color? color;
-  late final FlavorConfigValues? values;
+  late final FlavorConfigValues values;
 
   static FlavorConfig? _instance;
 
-  factory FlavorConfig({
-    @required Flavor? flavor,
-    Color color: Colors.blue,
-    @required FlavorConfigValues? values}) {
+  factory FlavorConfig(
+      {@required Flavor? flavor,
+      Color color: Colors.blue,
+      required FlavorConfigValues values}) {
     _instance ??= FlavorConfig._internal(
         flavor, StringUtils.enumName(flavor.toString()), color, values);
     return _instance!;
@@ -34,7 +34,9 @@ class FlavorConfig {
 
   FlavorConfig._internal(this.flavor, this.name, this.color, this.values);
 
-  static FlavorConfig get instance { return _instance!;}
+  static FlavorConfig get instance {
+    return _instance!;
+  }
 
   static bool isDevelopment() => _instance!.flavor == Flavor.DEV;
 
