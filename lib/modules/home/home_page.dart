@@ -6,16 +6,13 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    print(FlavorConfig.instance.values!.baseUrl);
-
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(title: const Text('Flutter Flavors')),
           body: Center(child: Column(
             children: [
               Text("Flavor: ${FlavorConfig.instance.name}"),
-              Text("Flavor: ${FlavorConfig.instance.values!.baseUrl}"),
+              Text("Flavor: ${FlavorConfig.instance.values.baseUrl}"),
             ],
           ))),
     );

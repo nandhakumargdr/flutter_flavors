@@ -32,7 +32,6 @@ class FlavorBanner extends StatelessWidget {
   }
 
   Widget _buildBanner(BuildContext context) {
-    print('_buildBanner');
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       child: Container(
@@ -49,7 +48,6 @@ class FlavorBanner extends StatelessWidget {
         ),
       ),
       onTap: () {
-        print('onTap');
         showDialog(context: context, builder: (BuildContext context) {
           return DeviceInfoDialog();
         });
